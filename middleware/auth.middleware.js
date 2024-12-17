@@ -8,7 +8,7 @@ const ApiError =require('../utils/Apierror.js')
 // const uploadOnCloudinary =require('../utils/cloudniary.js')
 // const  Apiresponse=require('../utils/Apiresponse.js')
 
- exports.verifyjwt= asyncHandler(async(req,res,next)=>{
+ const verifyjwt= asyncHandler(async(req,res,next)=>{
    try {
      const token = req.cookies?.accesstoken || req.header("Authorization")?.replace("Bearer ","")
      if(!token){
@@ -34,4 +34,4 @@ const ApiError =require('../utils/Apierror.js')
 
 
 })
-
+module.exports= {verifyjwt}

@@ -1,9 +1,11 @@
 const express = require("express");
+// const verifyjwt= require('../middleware/auth.middleware.js')
 const {
   signup,
   login,
   logout,
   getAllPackages,
+  verifyOtp,
   refreshaccesstoken
   // getAllUsers,
   // getUserById,
@@ -15,6 +17,7 @@ const router = express.Router();
 router.post("/signup", signup); // User signup
 router.post("/login", login); 
 router.post("/logout", logout); 
+router.post('/verifyotp',verifyOtp);
 router.post("/refreshtoken", refreshaccesstoken); 
 router.get("/getallpackages", getAllPackages); // Get all packages 
 
