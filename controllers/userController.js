@@ -1,11 +1,10 @@
 const User = require("../Model/user.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const uploadOnCloudinary =require('../utils/cloudinary.js')
+const Tour = require("../Model/tour.js");
 const asyncHandler= require('../utils/asyncHandler.js')
 const ApiError =require('../utils/Apierror.js')
 const  Apiresponse=require('../utils/Apiresponse.js');
-// const { deleteTour } = require("./adminController.js");
 
 
 const GenerateAccessandRefreshtoken = async (userid) => {
@@ -22,8 +21,17 @@ const GenerateAccessandRefreshtoken = async (userid) => {
   }
 }
 
+const getAllPackages =asyncHandler( async (req, res) => {
+  console.log("hello");
+  
+    const packages = await Tour.find();
+    console.log("all package backend",packages);
+    res
+    .status(200)
+    .json(new Apiresponse( 200,packages,"getting all package"))
+   
+});
 
-// Signup - Create a new user
 const signup = asyncHandler(async (req, res,next) => {
 console.log("hello",req.body);
 
@@ -69,7 +77,6 @@ console.log("hello",req.body);
  
 });
 
-// Login - Authenticate the user
 const login =asyncHandler( async (req, res,next) => {
     const { email, password } = req.body;
     console.log("check",req.body);
@@ -142,7 +149,6 @@ const logout = asyncHandler(async (req, res,next) => {
     .json(new Apiresponse(200, {}, "successfull logout"))
 })
 
-
 const refreshaccesstoken = asyncHandler(async (req, res,next) => {
 
   const IncomingRefreshToken = req.cookies.refreshtoken || req.body.refreshtoken
@@ -185,86 +191,10 @@ const refreshaccesstoken = asyncHandler(async (req, res,next) => {
 
 })
 
-
-// Fetch all users
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-
-
-// Fetch user by ID
-const getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Create a new user (Admin only)
-const createUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
-
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Update user details (Admin only or user)
-const updateUser = async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Delete user (Admin only)
-const deleteUser = async (req, res) => {
-  try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 module.exports= {
   signup,
   login,
   logout,
-  getAllUsers,
-  getUserById,
   refreshaccesstoken,
-  deleteUser,
-  updateUser,
-  createUser
+  getAllPackages,
 }

@@ -1,26 +1,26 @@
 const express = require("express");
+const upload = require("../middleware/multer.middleware.js");
+
 const {
-  addTour,
+  createTour,
   updateTour,
   deleteTour,
-  getTourById,
+  updateBooking,
+  getAllBookings,
+  
   // updateBooking,
-  // getAllBookings,
-//  signup,
-// logout
 } = require("../controllers/adminController.js");
 
 const router = express.Router();
 // router.post("/adminlogin", login); 
 // router.post("/adminlogout", logout); 
 // router.post("/signupadmin", signup); 
-// router.delete("/addtour", addtour);
-// router.delete("/deletetour/:id", deletetour);
-// router.get("/bookings", getAllBookings);
-// router.delete("/updatetour/:id", updateBooking);
-router.post("/addtour", addTour);
-router.patch("/updatetour/:id",updateTour);
-router.patch("/getTourById/:id",getTourById);
-router.delete("/deletetour/:id",deleteTour );
+
+router.post('/addtour', upload.array('images', 5), createTour);
+router.get("/getAllBookings",getAllBookings);
+router.patch("/updatetour/:tourId",updateTour);
+router.delete("/deletetour/:tourId",deleteTour );
+router.patch("/updatebooking/:packageid", updateBooking); 
+
 
 module.exports = router;

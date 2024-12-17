@@ -1,13 +1,12 @@
 const express = require("express");
 const {
-  getAllUsers,
-  getUserById,
   signup,
   login,
   logout,
-  deleteUser,
-  // createUser,
-  // updateUser
+  getAllPackages,
+  refreshaccesstoken
+  // getAllUsers,
+  // getUserById,
 } = require("../controllers/userController.js");
 
 const router = express.Router();
@@ -16,12 +15,11 @@ const router = express.Router();
 router.post("/signup", signup); // User signup
 router.post("/login", login); 
 router.post("/logout", logout); 
+router.post("/refreshtoken", refreshaccesstoken); 
+router.get("/getallpackages", getAllPackages); // Get all packages 
 
-router.get("/", getAllUsers); // Fetch all users
-router.get("/:id", getUserById); // Fetch a specific user by ID
+// router.get("/", getAllUsers); // Fetch all users
+// router.get("/:id", getUserById); // Fetch a specific user by ID
 
-// router.post("/", createUser); // Create a new user
-// router.patch("/:id", updateUser); // Update a user
-router.delete("/:id", deleteUser); // Delete a user
 
 module.exports = router;
