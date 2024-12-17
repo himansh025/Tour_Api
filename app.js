@@ -5,11 +5,12 @@ const app = express();
 const path = require('path');
 const bodyParser = require("body-parser");
 
-const allowedOrigins = [
-    'http://localhost:5173', 
-    '',
-  ];
-  
+
+  const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? process.env.ALLOWED_ORIGINS?.split(',') || [] // Production URL(s)
+  : ['http://localhost:5173']; // Local development URL
+
+console.log("Allowed Origins:", allowedOrigins);
   app.use(cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {

@@ -2,7 +2,7 @@ const Booking = require("../Model/booking.js");
 const Tour = require("../Model/tour.js");
 const asyncHandler = require("../utils/asyncHandler.js");
 const ApiError = require("../utils/Apierror.js");
-const ApiResponse = require("../utils/Apiresponse.js");
+const Apiresponse = require("../utils/Apiresponse.js");
 const uploadOnCloudinary = require('../utils/cloudinary.js')
 
 
@@ -65,57 +65,70 @@ console.log(' document',newPackage);
 
 // Update a tour
 const updateTour = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  const updatedTour = await Tour.findByIdAndUpdate(id, req.body, { new: true });
-  if (!updatedTour) {
+  const { tourId } = req.params;
+const {title,description,price }= req.body;
+  const validTour = await Tour.findById(tourId)
+  if (!validTour) {
     throw new ApiError(404, "Tour not found");
   }
 
-  res.status(200).json(new ApiResponse(200, updatedTour, "Tour updated successfully"));
+  const updatedTour = await Tour.findByIdAndUpdate(
+    tourId,
+    { title, description, price }, // Fields to update
+    { new: true, runValidators: true } // Return updated document and validate input
+  );
+
+console.log("update tour data",updatedTour);
+
+  res.status(200).json(new Apiresponse(200, updatedTour, "Tour updated successfully"));
 });
 
 // Delete a tour
 const deleteTour = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { tourId } = req.params;
+if(!tourId){
+  throw new ApiError(400,"tourid delteinot found")
+}
 
-  const deletedTour = await Tour.findByIdAndDelete(id);
+  const deletedTour = await Tour.findByIdAndDelete(tourId);
   if (!deletedTour) {
     throw new ApiError(404, "Tour not found");
   }
 
-  res.status(200).json(new ApiResponse(200, {}, "Tour deleted successfully"));
+  res.status(200).json(new Apiresponse(200, {}, "Tour deleted successfully"));
 });
 
 
 // Update booking
-const updateBooking = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+// const updateBooking = asyncHandler(async (req, res) => {
+//   const { id } = req.params;
 
-  const updatedBooking = await Booking.findByIdAndUpdate(id, req.body, { new: true });
-  if (!updatedBooking) {
-    throw new ApiError(404, "Booking not found");
-  }
+//   const updatedBooking = await Booking.findByIdAndUpdate(id, req.body, { new: true });
+//   if (!updatedBooking) {
+//     throw new ApiError(404, "Booking not found");
+//   }
 
-  res.status(200).json(new ApiResponse(200, updatedBooking, "Booking updated successfully"));
-});
-// Update booking
-const getAllBookings = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+//   res.status(200).json(new Apiresponse(200, updatedBooking, "Booking updated successfully"));
+// });
 
-  const updatedBooking = await Booking.findByIdAndUpdate(id, req.body, { new: true });
-  if (!updatedBooking) {
-    throw new ApiError(404, "Booking not found");
-  }
 
-  res.status(200).json(new ApiResponse(200, updatedBooking, "Booking updated successfully"));
-});
+
+// const getAllBookings = asyncHandler(async (req, res) => {
+//   const { id } = req.params;
+
+//   const updatedBooking = await Booking.findByIdAndUpdate(id, req.body, { new: true });
+//   if (!updatedBooking) {
+//     throw new ApiError(404, "Booking not found");
+//   }
+
+//   res.status(200).json(new Apiresponse(200, updatedBooking, "Booking updated successfully"));
+// });
 
 module.exports = {
   createTour,
   updateTour,
   deleteTour,
-  updateBooking,
-  getAllBookings
+  // getAllBookings
+  // updateBooking,
   // getTourById,
 };
