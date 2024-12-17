@@ -5,11 +5,14 @@ const path = require('path');
 const app = express();
 
 // CORS configuration based on environment
-const allowedOrigins = process.env.NODE_ENV === 'production' 
-  ? process.env.ALLOWED_ORIGINS?.split(',') || [] // Production URL(s)
-  : ['http://localhost:5173']; // Local development URL
 
-console.log("Allowed Origins:", allowedOrigins);
+
+const allowedOrigins = [
+  'http://localhost:5173', // Local development frontend
+   'https://lets-tour.vercel.app', // Production frontend
+];
+
+
 
 app.use(cors({
   origin: (origin, callback) => {
