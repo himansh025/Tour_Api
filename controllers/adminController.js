@@ -3,28 +3,30 @@ const Tour = require("../Model/tour.js");
 const asyncHandler = require("../utils/asyncHandler.js");
 const ApiError = require("../utils/Apierror.js");
 const Apiresponse = require("../utils/Apiresponse.js");
-const uploadOnCloudinary = require('../utils/cloudinary.js')
+const uploadOnCloudinary = require('../utils/cloudinary.js');
+const { log } = require("node:console");
+const { isValidObjectId } = require("mongoose");
+// const { deletebooking } = require("../../client/src/utils/BookingDataFetch.js");
 
 
 // Add a new tour
-
 const createTour = asyncHandler(async (req, res) => {
   // TODO: get video, upload to cloudinary, create video
   // console.log("files",req.files);
-  const { title, description, price,date, duration, location } = req.body;
-  console.log("files",req.files);
+  const { title, description, price, date, duration, location } = req.body;
+  console.log("files", req.files);
   // console.log(req.user._id);
-  const images=req.files;
-  console.log(title ,description ,price ,duration ,date, location);
-  
-if (!( title && description && price && duration && date  && location)) {
-      throw new ApiError(500, "all are  req")
+  const images = req.files;
+  console.log(title, description, price, duration, date, location);
+
+  if (!(title && description && price && duration && date && location)) {
+    throw new ApiError(500, "all are  req")
   }
   // if (!images || images.length === 0) {
   //   throw new ApiError(400 , 'Please upload images.')
   // }
 
-console.log("agaya");
+  console.log("agaya");
 
 
   // const uploadedImages = [];
@@ -35,15 +37,15 @@ console.log("agaya");
   //     uploadedImages.push(cloudinaryResponse.url); // Save the image URL returned by Cloudinary
   //   }
   // }
-  
+
   // const owner = await User.findById(req.user?._id);
   // if(!owner){
   //     throw new ApiError(400 , "User authentication is required");
   // }
 
   // console.log("owner  vd",owner);
-  
-  const newPackage = await  Tour.create({
+
+  const newPackage = await Tour.create({
     title,
     description,
     price,
@@ -53,20 +55,20 @@ console.log("agaya");
     duration
   });
 
-// console.log("tour package created",newPackage);
-newPackage.save()
-console.log(' document',newPackage);
+  // console.log("tour package created",newPackage);
+  newPackage.save()
+  console.log(' document', newPackage);
 
   res
-  .status(200)
-  .json(new Apiresponse( 200,newPackage,"added package"))
+    .status(200)
+    .json(new Apiresponse(200, newPackage, "added package"))
 })
 
 
 // Update a tour
 const updateTour = asyncHandler(async (req, res) => {
   const { tourId } = req.params;
-const {title,description,price }= req.body;
+  const { title, description, price } = req.body;
   const validTour = await Tour.findById(tourId)
   if (!validTour) {
     throw new ApiError(404, "Tour not found");
@@ -78,7 +80,7 @@ const {title,description,price }= req.body;
     { new: true, runValidators: true } // Return updated document and validate input
   );
 
-console.log("update tour data",updatedTour);
+  console.log("update tour data", updatedTour);
 
   res.status(200).json(new Apiresponse(200, updatedTour, "Tour updated successfully"));
 });
@@ -86,9 +88,9 @@ console.log("update tour data",updatedTour);
 // Delete a tour
 const deleteTour = asyncHandler(async (req, res) => {
   const { tourId } = req.params;
-if(!tourId){
-  throw new ApiError(400,"tourid delteinot found")
-}
+  if (!tourId) {
+    throw new ApiError(400, "tourid delteinot found")
+  }
 
   const deletedTour = await Tour.findByIdAndDelete(tourId);
   if (!deletedTour) {
@@ -100,35 +102,63 @@ if(!tourId){
 
 
 // Update booking
-// const updateBooking = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
+const updateBooking = asyncHandler(async (req, res) => {
+  const { bkid } = req.params;
+  const { members } = req.body
+  const updatedbooking = await Booking.findByIdAndUpdate(bkid, {
+    members: members,
+  }, { new: true });
+  if (!updatedbooking) {
+    throw new ApiError(404, "updatedbooking not found");
+  }
 
-//   const updatedBooking = await Booking.findByIdAndUpdate(id, req.body, { new: true });
-//   if (!updatedBooking) {
-//     throw new ApiError(404, "Booking not found");
-//   }
+  res.status(200).json(new Apiresponse(200, updatedbooking, "Booking updated successfully"));
+});
+const deleteBooking = asyncHandler(async (req, res) => {
+  const { bkid } = req.params;
+  console.log("Booking ID to delete:", bkid);
 
-//   res.status(200).json(new Apiresponse(200, updatedBooking, "Booking updated successfully"));
-// });
+  // Check if the provided bkid is a valid ObjectId
+  if (!isValidObjectId(bkid)) {
+    throw new ApiError(400, "Invalid Booking ID format");
+  }
+
+  // Attempt to delete the booking by ID
+  const deletedBooking = await Booking.findByIdAndDelete(bkid);
+  console.log("Deleted Booking:", deletedBooking);
+
+  if (!deletedBooking) {
+    throw new ApiError(404, "Booking not found");
+  }
+
+  // Send success response with a message
+  res.status(200).json({
+    message: "Booking deleted successfully",
+    data: deletedBooking,
+  });
+});
 
 
 
-// const getAllBookings = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
-
-//   const updatedBooking = await Booking.findByIdAndUpdate(id, req.body, { new: true });
-//   if (!updatedBooking) {
-//     throw new ApiError(404, "Booking not found");
-//   }
-
-//   res.status(200).json(new Apiresponse(200, updatedBooking, "Booking updated successfully"));
-// });
+const getAllBookings = asyncHandler(async (req, res) => {
+  // const { id } = req.params;
+  console.log("heck");
+  
+  const allbokings = await Booking.find();
+  if (!allbokings) {
+    throw new ApiError(404, "allbokings not found");
+  }
+  res.status(200).json(new Apiresponse(200, allbokings, "allbokings get successfully"));
+});
 
 module.exports = {
   createTour,
   updateTour,
   deleteTour,
-  // getAllBookings
-  // updateBooking,
+
+  getAllBookings,
+  updateBooking,
+  deleteBooking
   // getTourById,
+
 };
