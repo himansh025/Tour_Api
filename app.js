@@ -12,7 +12,9 @@ const allowedOrigins = [
    'https://lets-tour.vercel.app', // Production frontend
 ];
 
-
+app.use("/api/health",async(req,res)=>{
+  res.send("working fine")
+});
 
 app.use(cors({
   origin: (origin, callback) => {
